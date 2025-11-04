@@ -6,19 +6,25 @@ on:
 jobs:
   import:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # allow pushing to this repo
+
     steps:
       - name: Checkout target repo
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Clone source repo
         run: |
           git clone --depth=1 https://github.com/izzy2lost/ps2-covers.git source
-          echo "Waiting a bit to ensure all files are written..."
-          sleep 10
+          rm -rf source/.git        # remove its Git history to avoid submodule issue
+          echo "Waiting for filesystem to settle..."
+          sleep 5
 
-      - name: Copy files (no rsync)
+      - name: Copy files (safe copy)
         run: |
-          cp -rT source . || true   # copy tree, overwrite, keep structure
+          cp -rT source . || true   # copy structure, overwrite existing
 
       - name: Commit and push
         run: |
@@ -26,4 +32,4 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "Imported ps2-covers content" || echo "No changes to commit"
-          git push
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
