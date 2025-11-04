@@ -17,7 +17,7 @@ jobs:
 
       - name: Clone source repo
         run: |
-          git clone --depth=1 https://github.com/izzy2lost/ps2-covers.git source
+          git clone --depth=1 https://github.com/xlenore/ps2-covers.git source
           rm -rf source/.git        # remove its Git history to avoid submodule issue
           echo "Waiting for filesystem to settle..."
           sleep 5
