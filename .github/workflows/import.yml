@@ -13,17 +13,17 @@ jobs:
       - name: Clone source repo
         run: |
           git clone --depth=1 https://github.com/izzy2lost/ps2-covers.git source
-          echo "Waiting for filesystem to settle..."
-          sleep 15
+          echo "Waiting a bit to ensure all files are written..."
+          sleep 10
 
-      - name: Copy files to current repo
+      - name: Copy files (no rsync)
         run: |
-          rsync -a --delete --ignore-missing-args --ignore-errors source/ ./
+          cp -rT source . || true   # copy tree, overwrite, keep structure
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
+          git add -A
           git commit -m "Imported ps2-covers content" || echo "No changes to commit"
           git push
