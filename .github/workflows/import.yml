@@ -1,0 +1,27 @@
+name: Import ps2-covers
+
+on:
+  workflow_dispatch:  # allows you to run it manually from the Actions tab
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+
+      - name: Clone source repo
+        run: |
+          git clone --depth=1 https://github.com/izzy2lost/ps2-covers.git source
+
+      - name: Copy files to current repo
+        run: |
+          rsync -a --delete source/ ./
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Imported ps2-covers content" || echo "No changes to commit"
+          git push
